@@ -1,47 +1,37 @@
-# RUN your app with “streamlit run <python file path>” such as “streamlit run src/Jan26_CatVSDog_Evaluation.py”
-from fastai.vision.all import *
 import streamlit as st
-from pathlib import Path
-from PIL import Image as PILImageLib  # only for Image.NEAREST
+from fastai.vision.all import load_learner, PILImage
+from PIL import Image
+import io
 
-st.markdown("<h1 style='color: yellow;'>Cat or Dog Classifier</h1>", unsafe_allow_html=True)
-st.text("Created by Darin Djapri")
+# ✅ Must exist when unpickling the Learner
+def cat_or_dog(file_name):
+    # In training, file_name was something like "Siamese_20.jpg"
+    # At inference, it may be a Path. Convert to just the base name.
+    name = getattr(file_name, "name", str(file_name)).split("/")[-1]
+    return "CAT" if name[0].isupper() else "DOG"
 
-MODELS_DIR = Path("models")
+st.set_page_config(page_title="Cat vs Dog Classifier", layout="centered")
 
-# Find all .pkl files in models/
-model_paths = sorted(MODELS_DIR.glob("*.pkl"))
-model_names = [p.name for p in model_paths]
+@st.cache_resource
+def get_model():
+    return load_learner("cat_vs_dog_model.pkl")
 
-if not model_paths:
-    st.error(f"No .pkl models found in: {MODELS_DIR.resolve()}")
-    st.stop()
+learn = get_model()
 
-# UI: choose which model to use
-selected_name = st.selectbox("Select a model to use:", model_names)
+st.title("Cat vs Dog Classifier")
+st.write("Upload an image and I’ll predict whether it’s a CAT or DOG.")
 
-@st.cache_resource  # cache the loaded learner per selected model
-def get_model(model_path_str: str):
-    return load_learner(model_path_str)
+uploaded = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-model_path = str(MODELS_DIR / selected_name)
-cat_vs_dog_model = get_model(model_path)
+if uploaded is not None:
+    img_bytes = uploaded.read()
+    pil_img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+    st.image(pil_img, caption="Uploaded image", use_container_width=True)
 
-st.caption(f"Loaded model: {selected_name}")
+    fastai_img = PILImage.create(pil_img)
+    pred_class, pred_idx, probs = learn.predict(fastai_img)
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
-if uploaded_file:
-    real_img = PILImage.create(uploaded_file)
-    resized_img = real_img.resize((224, 224), resample=PILImageLib.NEAREST)
-
-    prediction = cat_vs_dog_model.predict(resized_img)
-    index = int(prediction[1])
-    confidence_level = float(prediction[2][index]) * 100
-
-    if confidence_level > 90:
-        label = f"It is a {prediction[0]} with {confidence_level:.2f}% confidence."
-    else:
-        label = f"WARNING. Not sure — predicted {prediction[0]} with {confidence_level:.2f}% confidence."
-
-    st.text(label)
-    st.image(uploaded_file)
+    conf = float(probs[int(pred_idx)]) * 100.0
+    st.subheader("Prediction")
+    st.write(f"**{pred_class}**")
+    st.write(f"Confidence: **{conf:.2f}%**")
