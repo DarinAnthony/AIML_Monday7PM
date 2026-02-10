@@ -1,3 +1,4 @@
+# RUN your app with “streamlit run <python file path>” such as “streamlit run src/Jan26_CatVSDog_Evaluation.py”
 from fastai.vision.all import *
 import streamlit as st
 from pathlib import Path

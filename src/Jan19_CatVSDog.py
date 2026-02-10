@@ -10,7 +10,7 @@ def cat_or_dog(file_name):
     else:
         return "DOG"
 
-cat_vs_dog_model = load_learner("models/cat_vs_dog_model_fastai2_8_4.pkl")
+cat_vs_dog_model = load_learner("cat_vs_dog_model_fastai2_8_4.pkl")
 
 st.markdown("<h1 style='color: yellow;'>Cat or Dog Classifier</h1>", unsafe_allow_html=True)
 #st.title("Cat or Dog")
