@@ -3,8 +3,9 @@ from fastai.vision.all import load_learner, PILImage
 from PIL import Image
 import io
 
+st.set_page_config(page_title="Cat vs Dog Classifier", layout="centered")
 
-"""
+dump = """
 import numpy
 import scipy
 import matplotlib
@@ -28,15 +29,12 @@ fastai: 2.8.4
 pillow (PIL): 11.3.0
 """
 
-
 # Must exist when unpickling the Learner
 def cat_or_dog(file_name):
     # In training, file_name was something like "Siamese_20.jpg"
     # At inference, it may be a Path. Convert to just the base name.
     name = getattr(file_name, "name", str(file_name)).split("/")[-1]
     return "CAT" if name[0].isupper() else "DOG"
-
-st.set_page_config(page_title="Cat vs Dog Classifier", layout="centered")
 
 @st.cache_resource
 def get_model():
