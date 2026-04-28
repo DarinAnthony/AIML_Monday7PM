@@ -37,7 +37,7 @@ def extract_breed(file_name):
 
 @st.cache_resource
 def get_model():
-    return load_learner("models/jellyfish_model_fastai_2_7_19.pkl")
+    return load_learner("models/jellyfish_classifier_fastai_2_7_19.pkl")
 
 learn = get_model()
 
