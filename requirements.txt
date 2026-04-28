@@ -1,10 +1,9 @@
-streamlit==1.41.1
-numpy==2.0.2
-pandas==2.2.2
+streamlit==1.40.1
+numpy==1.26.4
 scipy==1.15.3
-matplotlib==3.10.0
-pillow==11.3.0
-torch==2.8.0
+matplotlib==3.9.2
+pillow==10.4.0
 fastai==2.7.19
-# pip install -r requirements.txt
 
+# run this command in the terminal when you want to install the dependencies above:
+# pip install -r requirements.txt
