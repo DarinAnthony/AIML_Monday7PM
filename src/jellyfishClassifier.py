@@ -15,25 +15,25 @@ import streamlit as st
 from fastai.vision.all import load_learner, PILImage
 from fastai.vision.all import *
 from PIL import Image
+import PIL
 import io
+import fastai
+import os
+
+# print("numpy:", numpy.__version__)
+# print("scipy:", scipy.__version__)
+print("matplotlib:", matplotlib.__version__)
+print("torch:", torch.__version__)
+print("fastai:", fastai.__version__)
+print("pillow (PIL):", PIL.__version__)
 
 st.set_page_config(page_title="Jellyfish Classifier", layout="centered")
 
-def extract_breed(file_name):
-    # you remove the extension of a filename using these next two lines of code
-    # and it specifically gives you a list of strings that were separated by _
-    path_obj = Path(file_name)
-    parts = path_obj.stem.split('_')
+def extract_jellyfish(file_path):
+    dirname = os.path.dirname(file_path)
+    subdirname = os.path.basename(dirname)
 
-    # print(parts)
-
-    breed = '_'.join(parts[:-1]) # group all the elements in 'parts' except the last one
-    # ^ this groups each element with an _
-
-    if file_name[0].isupper():
-        return "CAT - " + breed
-    else:
-        return "DOG - "+ breed
+    return subdirname
 
 @st.cache_resource
 def get_model():
